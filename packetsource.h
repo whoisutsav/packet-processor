@@ -20,6 +20,8 @@ typedef struct {
 
 PacketSource_t * createPacketSource(long mean, int numSources, short seed);
 
+volatile Packet_t * getConstantPacket(PacketSource_t * packetSource, int val, int sourceNum); 
+
 volatile Packet_t * getUniformPacket(PacketSource_t * packetSource, int soruceNum);
 long getUniformCount(PacketSource_t * packetSource, int soruceNum);
 

@@ -68,6 +68,15 @@ void deletePacketSource(PacketSource_t * packetSource)
 
     free(packetSource);
 }
+volatile Packet_t * getConstantPacket(PacketSource_t * packetSource, int val, int sourceNum) {
+  volatile Packet_t * tmp = (volatile Packet_t *)malloc(sizeof(volatile Packet_t));
+  tmp->iterations = val;
+  tmp->seed = 0;
+  // TODO - is this necessary?
+  packetSource->uniformCounts[sourceNum] += tmp->iterations;
+  return tmp; 
+}
+
 volatile Packet_t * getUniformPacket(PacketSource_t * packetSource, int sourceNum){
 	volatile Packet_t * tmp = (volatile Packet_t *)malloc(sizeof(volatile Packet_t));
 	tmp->iterations =  getUniformRand(&(packetSource->uniformGen[sourceNum]));

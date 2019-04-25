@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
 
   if (argc < 5) {
     printf("Usage: serial_main [NUM_SOURCES] [NUM_PACKETS] [EXPECTED_WORK] [PACKET_TYPE] [EXECUTION_ID]\n");
+    return 1;
   }
 
   num_sources = atoi(argv[1]);
@@ -19,8 +20,8 @@ int main(int argc, char* argv[]) {
   id = (argc == 6) ? (short) atoi(argv[5]) : 0; 
 
   PacketSource_t * source = createPacketSource(work, num_sources, id); 
+  volatile Packet_t * packet;
 
-  Packet_t * packet;
   for(int j=0; j < num_packets; j++) {
     for(int k=0; k < num_sources; k++) {
        switch(packet_type) {
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]) {
             packet = getConstantPacket(source, work, k);
             break;
        } 
-       printf("Calculating checksum of packet with iterations %dl\n", packet->iterations); 
+       //printf("Calculating checksum of packet with iterations %ld\n", packet->iterations); 
        getFingerprint(packet->iterations, packet->seed);
     } 
   } 
