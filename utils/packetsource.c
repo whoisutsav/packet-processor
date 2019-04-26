@@ -4,6 +4,11 @@ PacketSource_t * createPacketSource(long mean, int numSources, short seed) {
 
 	PacketSource_t * packetSource = (PacketSource_t *)malloc(sizeof(PacketSource_t));
 
+  // Modifications
+  packetSource->mean = mean;
+  packetSource->seed = seed;
+
+
 	packetSource->uniformGen = (UniformGenerator_t *)malloc(sizeof(UniformGenerator_t) * numSources);
 	packetSource->uniformSeed = (UniformGenerator_t *)malloc(sizeof(UniformGenerator_t) * numSources);
 	packetSource->uniformCounts = (long *)malloc(sizeof(long) * numSources);
@@ -68,12 +73,10 @@ void deletePacketSource(PacketSource_t * packetSource)
 
     free(packetSource);
 }
-volatile Packet_t * getConstantPacket(PacketSource_t * packetSource, int val, int sourceNum) {
+volatile Packet_t * getConstantPacket(PacketSource_t * packetSource, int sourceNum) {
   volatile Packet_t * tmp = (volatile Packet_t *)malloc(sizeof(volatile Packet_t));
-  tmp->iterations = val;
-  tmp->seed = 0;
-  // TODO - is this necessary?
-  packetSource->uniformCounts[sourceNum] += tmp->iterations;
+  tmp->iterations = packetSource->mean;
+  tmp->seed = packetSource->seed;
   return tmp; 
 }
 

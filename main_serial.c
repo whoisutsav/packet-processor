@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  process_serial(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atol(argv[4])); 
+  process_serial(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atol(argv[4]), 1, 0, NULL); 
 
   return 0;
 }

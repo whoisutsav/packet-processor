@@ -6,11 +6,15 @@
 typedef struct _thread_arg {
   int id;
   int npackets;
+  int debug;
+  long ** debug_matrix;
   queue * q;
 } thread_arg;
 
-void process_serial(int nsources, int npackets, int packet_type, long expected_work);
-void process_parallel(int nworkers, int npackets, int packet_type, int queue_depth, long expected_work);
-void process_serial_queue(int nsources, int npackets, int packet_type, int queue_depth, long expected_work);
+typedef enum _ptype {CONSTANT, UNIFORM, EXPONENTIAL} Packet_type;
+
+void process_serial(int nsources, int npackets, Packet_type ptype, long expected_work, int seed, int debug, long *** debug_output);
+void process_parallel(int nworkers, int npackets, Packet_type ptype, int queue_depth, long expected_work, int seed, int debug, long *** debug_output);
+void process_serial_queue(int nsources, int npackets, Packet_type ptype, int queue_depth, long expected_work, int seed, int debug, long *** debug_output);
 
 #endif /* _PACKET_PROCESSOR_H */
