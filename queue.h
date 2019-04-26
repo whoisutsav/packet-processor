@@ -1,7 +1,7 @@
 #ifndef _QUEUE_H
 #define _QUEUE_H
 
-#include "packetsource.h"
+#include "utils/packetsource.h"
 
 typedef struct _queue {
   volatile long head;

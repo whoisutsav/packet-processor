@@ -3,8 +3,8 @@
 #include <pthread.h>
 #include "packet_processor.h"
 #include "queue.h"
-#include "packetsource.h"
-#include "fingerprint.h"
+#include "utils/packetsource.h"
+#include "utils/fingerprint.h"
 
 void process_serial(int nsources, int npackets, int packet_type, long expected_work) {
   // TODO make id parameter modifiable

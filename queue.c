@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "queue.h"
-#include "packetsource.h"
+#include "utils/packetsource.h"
 
 queue * create_queue(int depth) {
   queue * q = malloc(sizeof(queue));
