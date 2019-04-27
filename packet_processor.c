@@ -6,9 +6,25 @@
 #include "utils/packetsource.h"
 #include "utils/fingerprint.h"
 
+volatile Packet_t* (*getSourceFunction(Packet_type ptype))(PacketSource_t *, int) {
+  switch(ptype) {
+     case UNIFORM:
+       return getUniformPacket; 
+       break;
+     case EXPONENTIAL:
+       return getExponentialPacket;
+       break;
+     case CONSTANT:
+     default:
+       return getConstantPacket;
+       break;
+  } 
+}
+
 void process_serial(int nsources, int npackets, Packet_type ptype, long expected_work, int seed, int debug, long *** debug_output) {
   PacketSource_t * source = createPacketSource(expected_work, nsources, seed); 
   volatile Packet_t * packet;
+  volatile Packet_t* (*sourceFunc)(PacketSource_t*, int) = getSourceFunction(ptype);
 
   long ** debug_matrix = NULL;
   if(debug) {
@@ -21,18 +37,7 @@ void process_serial(int nsources, int npackets, Packet_type ptype, long expected
   long result;
   for(int i=0; i < npackets; i++) {
     for(int j=0; j < nsources; j++) {
-       switch(ptype) {
-          case 1:
-            packet = getUniformPacket(source, j); 
-            break;
-          case 2:
-            packet = getExponentialPacket(source, j);
-            break;
-          case 0:
-          default:
-            packet = getConstantPacket(source, j);
-            break;
-       } 
+       packet = (*sourceFunc)(source, j);
        result = getFingerprint(packet->iterations, packet->seed);
        if (debug) debug_matrix[j][i] = result;
     } 
@@ -87,21 +92,11 @@ void process_parallel(int nworkers, int npackets, Packet_type ptype, int queue_d
   
   PacketSource_t * source = createPacketSource(expected_work, nworkers, seed); 
   Packet_t * packet;
+  volatile Packet_t* (*sourceFunc)(PacketSource_t*, int) = getSourceFunction(ptype);
 
   for(int j=0; j < npackets; j++) {
     for(int k=0; k < nworkers; k++) {
-       switch(ptype) {
-          case 1:
-            packet = (Packet_t *) getUniformPacket(source, k); 
-            break;
-          case 2:
-            packet = (Packet_t *) getExponentialPacket(source, k);
-            break;
-          case 0:
-          default:
-            packet = (Packet_t *) getConstantPacket(source, k);
-            break;
-       } 
+       packet = (Packet_t*) (*sourceFunc)(source, k);
        while(enqueue(args[k].q, packet) == -1) {}
     } 
   } 
@@ -131,22 +126,12 @@ void process_serial_queue(int nsources, int npackets, Packet_type ptype, int que
   
   PacketSource_t * source = createPacketSource(expected_work, nsources, seed); 
   Packet_t *in_packet, *out_packet;
+  volatile Packet_t* (*sourceFunc)(PacketSource_t*, int) = getSourceFunction(ptype);
 
   long result;
   for(int i=0; i < npackets; i++) {
     for(int j=0; j < nsources; j++) {
-       switch(ptype) {
-          case 1:
-            in_packet = (Packet_t *) getUniformPacket(source, j); 
-            break;
-          case 2:
-            in_packet = (Packet_t *) getExponentialPacket(source, j);
-            break;
-          case 0:
-          default:
-            in_packet = (Packet_t *) getConstantPacket(source, j);
-            break;
-       } 
+       in_packet = (Packet_t *) (*sourceFunc)(source, j);
        enqueue(queues[j], in_packet);
        dequeue(queues[j], &out_packet); 
        result = getFingerprint(out_packet->iterations, out_packet->seed);

@@ -173,5 +173,5 @@ int main(int argc, char* argv[]) {
   printf("passed.\n");
 
   printf("\nAll tests passed.\n");
-
+  return 0;
 }
