@@ -5,7 +5,7 @@
 
 typedef struct _thread_arg {
   int id;
-  int npackets;
+  int t;
   int debug;
   long ** debug_matrix;
   queue * q;
