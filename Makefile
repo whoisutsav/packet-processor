@@ -13,7 +13,7 @@ test_functional: utils/packetsource.c utils/packetsource.h utils/fingerprint.c u
 	gcc -Wall -Werror -O3 -pthread test_functional.c utils/packetsource.c utils/fingerprint.c utils/generators.c utils/crc32.c queue.c packet_processor.c -lm -o test_functional 
 
 test_performance: utils/packetsource.c utils/packetsource.h utils/fingerprint.c utils/fingerprint.h utils/generators.c utils/generators.h utils/crc32.c utils/crc32.h queue.c queue.h packet_processor.c packet_processor.h utils/stopwatch.c utils/stopwatch.h test_performance.c 
-	gcc -Wall -O3 -pthread test_performance.c utils/packetsource.c utils/fingerprint.c utils/generators.c utils/crc32.c utils/stopwatch.c queue.c packet_processor.c -lm -o test_performance 
+	gcc -Wall -Werror -O3 -pthread test_performance.c utils/packetsource.c utils/fingerprint.c utils/generators.c utils/crc32.c utils/stopwatch.c queue.c packet_processor.c -lm -o test_performance 
 
 clean:
-	rm -f main_serial main_parallel main_serial_queue
+	rm -f main_serial main_parallel main_serial_queue test_functional test_performance
