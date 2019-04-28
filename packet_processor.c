@@ -22,7 +22,6 @@ volatile Packet_t* (*getSourceFunction(Packet_type ptype))(PacketSource_t *, int
 }
 
 void process_serial(int n, int t, Packet_type ptype, long w, int seed, int debug, long *** debug_output) {
-  // serial so nthreads just proxy for nsources
   int nsources = n-1;
   PacketSource_t * source = createPacketSource(w, nsources, seed); 
   volatile Packet_t * packet;
@@ -67,20 +66,20 @@ void * thread_func(void* arg) {
 }
 
 void process_parallel(int n, int t, Packet_type ptype, int queue_depth, long w, int seed, int debug, long *** debug_output) {
-  int nworkers = n - 1;
-  pthread_t threads[nworkers];
-  thread_arg args[nworkers];
+  int nsources = n - 1;
+  pthread_t threads[nsources];
+  thread_arg args[nsources];
 
   long ** debug_matrix = NULL;
   if(debug) {
-    debug_matrix = malloc(nworkers * sizeof(long *));
-    for (int i=0; i<nworkers; i++) {
+    debug_matrix = malloc(nsources * sizeof(long *));
+    for (int i=0; i<nsources; i++) {
       debug_matrix[i] = malloc(t * sizeof(long));
     }
   }
 
   int rc;
-  for(int i=0; i<nworkers; i++) {
+  for(int i=0; i<nsources; i++) {
     args[i].id = i;
     args[i].q = create_queue(queue_depth);
     args[i].t = t;
@@ -93,18 +92,18 @@ void process_parallel(int n, int t, Packet_type ptype, int queue_depth, long w, 
     }
   }
   
-  PacketSource_t * source = createPacketSource(w, nworkers, seed); 
+  PacketSource_t * source = createPacketSource(w, nsources, seed); 
   Packet_t * packet;
   volatile Packet_t* (*sourceFunc)(PacketSource_t*, int) = getSourceFunction(ptype);
 
   for(int j=0; j < t; j++) {
-    for(int k=0; k < nworkers; k++) {
+    for(int k=0; k < nsources; k++) {
        packet = (Packet_t*) (*sourceFunc)(source, k);
        while(enqueue(args[k].q, packet) == -1) {}
     } 
   } 
 
-  for(int m=0; m<nworkers; m++) {
+  for(int m=0; m<nsources; m++) {
     pthread_join(threads[m], NULL);
   }
 

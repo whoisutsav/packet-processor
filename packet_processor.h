@@ -13,8 +13,8 @@ typedef struct _thread_arg {
 
 typedef enum _ptype {CONSTANT, UNIFORM, EXPONENTIAL} Packet_type;
 
-void process_serial(int nsources, int npackets, Packet_type ptype, long expected_work, int seed, int debug, long *** debug_output);
-void process_parallel(int nworkers, int npackets, Packet_type ptype, int queue_depth, long expected_work, int seed, int debug, long *** debug_output);
-void process_serial_queue(int nsources, int npackets, Packet_type ptype, int queue_depth, long expected_work, int seed, int debug, long *** debug_output);
+void process_serial(int n, int t, Packet_type ptype, long w, int seed, int debug, long *** debug_output);
+void process_parallel(int n, int t, Packet_type ptype, int queue_depth, long w, int seed, int debug, long *** debug_output);
+void process_serial_queue(int n, int t, Packet_type ptype, int queue_depth, long w, int seed, int debug, long *** debug_output);
 
 #endif /* _PACKET_PROCESSOR_H */

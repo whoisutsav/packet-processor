@@ -95,15 +95,14 @@ void test_queue_parallel() {
 
 void test_serial_processor() {
   long *** debug_output = malloc(sizeof(long **));
-  int nsources = 10, npackets = 10000, seed = 1;
-  long expected_work = 1000;
+  int n = 10, t = 10000, seed = 1;
+  long w = 1000;
 
-  process_serial(nsources, npackets, CONSTANT, expected_work, seed, 1, debug_output);
-
+  process_serial(n, t, CONSTANT, w, seed, 1, debug_output);
   
-  for (int i=0; i<nsources; i++) {
-    for (int j=0; j<npackets; j++) {
-      assert((*debug_output)[i][j] == getFingerprint(expected_work, seed));
+  for (int i=0; i<(n-1); i++) {
+    for (int j=0; j<t; j++) {
+      assert((*debug_output)[i][j] == getFingerprint(w, seed));
     }
   }
 }
@@ -111,15 +110,15 @@ void test_serial_processor() {
 void test_parallel_processor() {
   long *** debug_output_serial = malloc(sizeof(long **));
   long *** debug_output_parallel = malloc(sizeof(long**));
-  int nsources = 10, npackets = 10000, seed = 123;
-  long expected_work = 1000;
+  int n = 10, t = 10000, seed = 123;
+  long w = 1000;
 
-  process_serial(nsources, npackets, UNIFORM, expected_work, seed, 1, debug_output_serial);
-  process_parallel(nsources, npackets, UNIFORM, 1, expected_work, seed, 1, debug_output_parallel);
+  process_serial(n, t, UNIFORM, w, seed, 1, debug_output_serial);
+  process_parallel(n, t, UNIFORM, 1, w, seed, 1, debug_output_parallel);
 
   
-  for (int i=0; i<nsources; i++) {
-    for (int j=0; j<npackets; j++) {
+  for (int i=0; i<(n-1); i++) {
+    for (int j=0; j<t; j++) {
       assert((*debug_output_serial)[i][j] == (*debug_output_parallel)[i][j]);
     }
   }
@@ -128,15 +127,15 @@ void test_parallel_processor() {
 void test_serial_queue_processor() {
   long *** debug_output_serial = malloc(sizeof(long **));
   long *** debug_output_serial_queue = malloc(sizeof(long**));
-  int nsources = 10, npackets = 10000, seed = 123;
-  long expected_work = 1000;
+  int n = 10, t = 10000, seed = 123;
+  long w = 1000;
 
-  process_serial(nsources, npackets, UNIFORM, expected_work, seed, 1, debug_output_serial);
-  process_serial_queue(nsources, npackets, UNIFORM, 1, expected_work, seed, 1, debug_output_serial_queue);
+  process_serial(n, t, UNIFORM, w, seed, 1, debug_output_serial);
+  process_serial_queue(n, t, UNIFORM, 1, w, seed, 1, debug_output_serial_queue);
 
   
-  for (int i=0; i<nsources; i++) {
-    for (int j=0; j<npackets; j++) {
+  for (int i=0; i<(n-1); i++) {
+    for (int j=0; j<t; j++) {
       assert((*debug_output_serial)[i][j] == (*debug_output_serial_queue)[i][j]);
     }
   }
