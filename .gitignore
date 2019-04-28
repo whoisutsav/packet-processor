@@ -3,3 +3,4 @@ main_serial
 main_parallel
 main_serial_queue
 test_functional
+test_performance
