@@ -24,7 +24,7 @@ volatile Packet_t* (*getSourceFunction(Packet_type ptype))(PacketSource_t *, int
 void process_serial(int n, int t, Packet_type ptype, long w, int seed, int debug, long *** debug_output) {
   int nsources = n-1;
   PacketSource_t * source = createPacketSource(w, nsources, seed); 
-  volatile Packet_t * packet;
+  Packet_t * packet;
   volatile Packet_t* (*sourceFunc)(PacketSource_t*, int) = getSourceFunction(ptype);
 
   long ** debug_matrix = NULL;
@@ -38,8 +38,9 @@ void process_serial(int n, int t, Packet_type ptype, long w, int seed, int debug
   long result;
   for(int i=0; i < t; i++) {
     for(int j=0; j < nsources; j++) {
-       packet = (*sourceFunc)(source, j);
+       packet = (Packet_t *) (*sourceFunc)(source, j);
        result = getFingerprint(packet->iterations, packet->seed);
+       free(packet);
        if (debug) debug_matrix[j][i] = result;
     } 
   } 
@@ -53,10 +54,11 @@ void * thread_func(void* arg) {
 
   int i=0;
   long result;
-  Packet_t * packet_p;
+  Packet_t * packet;
   while(i < myarg->t) {
-    if(dequeue(myarg->q, &packet_p) != -1) {
-      result = getFingerprint(packet_p->iterations, packet_p->seed);
+    if(dequeue(myarg->q, &packet) != -1) {
+      result = getFingerprint(packet->iterations, packet->seed);
+      free(packet);
       if (myarg->debug) myarg->debug_matrix[myarg->id][i] = result;
       i++;
     }
@@ -138,6 +140,7 @@ void process_serial_queue(int n, int t, Packet_type ptype, int queue_depth, long
        enqueue(queues[j], in_packet);
        dequeue(queues[j], &out_packet); 
        result = getFingerprint(out_packet->iterations, out_packet->seed);
+       free(out_packet);
        if (debug) debug_matrix[j][i] = result;
     } 
   } 
