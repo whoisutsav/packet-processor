@@ -5,8 +5,10 @@
 
 ## Run
 Serial program: `./main_serial`
+
 Parallel program: `./main_parallel`
-Serial-Queue prorgam: `./main_serial_queue`
+
+Serial-Queue program: `./main_serial_queue`
 
 ## Run tests
 `./test_functional`
